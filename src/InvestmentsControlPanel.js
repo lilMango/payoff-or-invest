@@ -40,10 +40,9 @@ class InvestmentsControlPanel extends React.Component {
 						APR={argInvestmentsArray[i].APR}
 						monthlyPayment={argInvestmentsArray[i].monthlyPayment}
 						
-						onClickDelete={()=>this.props.onClickDelete(argInvestmentsArray[i].id)}
-						/*
-						onClickEditLoanEntry={()=>this.props.onClickShowModal(argInvestmentsArray[i].id)}						
-						*/
+						onClickDelete={()=>this.props.onClickDelete(argInvestmentsArray[i].id)}						
+						onClickEditEntry={()=>this.props.onClickShowModal(argInvestmentsArray[i].id)}						
+						
 						/>
 
 			investmentsTable.push(tmp);
@@ -63,7 +62,7 @@ class InvestmentsControlPanel extends React.Component {
 	                <button id="btnAddInvest" onClick={()=>this.props.onClickShowModal(0)}>+</button>
 	            </div>			
 				<div className="panel-content" id="loans-content-container">
-					{this.renderInvestmentsTable(this.props.loansArray)}
+					{this.renderInvestmentsTable(this.props.investmentsArray)}
 				</div>
 			</div>
 		)

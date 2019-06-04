@@ -75,7 +75,7 @@ class CumulativeDebtsVsInvestmentsChart extends Component {
   		//let numPayments = -Math.log(1-(APR/12)*principal/monthlyPayment)/Math.log(1+APR/12)
   		//TODO calculate MAX interval from longest debt? or allow user to set length??
   		//console.log('Number of Years:',numPayments/12.0);
-  		let numPayments = 12 * 20; //12 months * 20 years
+  		let numPayments = 12 * 10; //12 months * 20 years
   
   		let year = (new Date()).getYear() + 1900;
   		let month = (new Date()).getMonth();

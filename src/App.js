@@ -5,8 +5,7 @@ import InvestmentsControlPanel from './InvestmentsControlPanel';
 import ExtraPaymentsPanel from './views/ExtraPaymentsPanel';
 import CumulativeDebtsVsInvestment from './views/CumulativeDebtsVsInvestments';
 
-
-import AddModal from './views/AddModal';
+import DataEntryModal from './views/DataEntryModal';
 
 import './App.css';
 
@@ -39,19 +38,19 @@ class App extends Component {
 				{'name':'Car Loan','principal':28000, 'APR':4.4, 'monthlyPayment':130.0, 'id': (new Date().getTime())+'|Car Loan|4.4'}
 		]
 		localStorage.setItem('loans',JSON.stringify(loansArr));
-		*/
+		
 
 		let investmentsArr = [
 				{'name':'ROTH Ira','principal':6000, 'APR':7.6, 'monthlyPayment':500.0, 'id': (new Date().getTime())+'|Roth|4.58'},
 				{'name':'Savings Account','principal':8000, 'APR':2.0, 'monthlyPayment':100.0, 'id': (new Date().getTime())+'|Savings|7.4'}
 		];
 		localStorage.setItem('investments',JSON.stringify(investmentsArr));		
-
+		*/
 		super(props);				
 
 		this.state = {
 				loansArr: this.getLoansFromDB(),
-				investmentsArr: investmentsArr,//this.getInvestmentsFromDB(),
+				investmentsArr: this.getInvestmentsFromDB(),
 				showModal:false,
 				EMPTY_MODAL_FORM: {
 					id:0,
@@ -61,7 +60,8 @@ class App extends Component {
 					monthlyPayment: ''
 				},
 				modalForm: {},
-				extra:0
+				extra:0,
+				editMode:'loan'
 		};
 	}
 
@@ -70,93 +70,109 @@ class App extends Component {
 	/*
 	* New or Edit loan info modal
 	* Will update the modal with prefilled data or empty. id == 0 will empty the modal form
+	* isLoan=true, isLoan=false (investment)
 	*/
-	handleShowModal(id) {
-		console.log('handleShowModal(',id,')');
-
-		const loansArr = this.state.loansArr.slice();
+	handleShowModal(id,isLoan) {
+		console.log('handleShowModal(',id,',',isLoan,')');
+		
+		let arr=this.state.investmentsArr.slice();
+		
+		if (isLoan===true) {
+			arr = this.state.loansArr.slice();
+		}
+		
 		let modalForm = JSON.parse(JSON.stringify(this.state.EMPTY_MODAL_FORM));
 
-		for (let i=0; i< loansArr.length;i++) {
-			if(loansArr[i].id ===id) {
+		for (let i=0; i< arr.length;i++) {
+			if(arr[i].id ===id) {
 				modalForm = {
 					id:id,
-					name: loansArr[i].name,
-					principal: loansArr[i].principal,
-					APR: loansArr[i].APR,
-					monthlyPayment: loansArr[i].monthlyPayment
+					name: arr[i].name,
+					principal: arr[i].principal,
+					APR: arr[i].APR,
+					monthlyPayment: arr[i].monthlyPayment
 				}
 				break;
 			}
 		}
 
-		this.setState({
-			loansArr:loansArr,
+		let res = {
+			loansArr:this.state.loansArr,
 			investmentsArr: this.state.investmentsArr,
 			showModal:true,
 			modalForm:modalForm,
 			EMPTY_MODAL_FORM: this.state.EMPTY_MODAL_FORM,
-			extra:this.state.extra
-		});
+			extra:this.state.extra,
+			editMode:this.state.editMode
+		};
+
+		if (isLoan===true){
+			res['editMode'] = 'loan';
+		} else {
+			res['editMode'] = 'invest';
+		}
+		console.log(res);
+		this.setState(res);
 	}
 
 	handleCloseModal() {
 		const modalForm = JSON.parse(JSON.stringify(this.state.EMPTY_MODAL_FORM));
-
-		this.setState({
+		let res = {
 			loansArr:this.state.loansArr,
 			investmentsArr: this.state.investmentsArr,
-			showModal:false,
+			showModal:this.state.showModal,
 			modalForm:modalForm,
 			EMPTY_MODAL_FORM: this.state.EMPTY_MODAL_FORM,
-			extra:this.state.extra
-		});  		
+			extra:this.state.extra,
+			editMode: this.state.editMode
+		}
+		
+		res['showModal'] = false
+		
+		this.setState(res);  		
 	}
 	
-	//We'll always track the value of the input fields, then trigger save action when we save it. 
-	//using the 'name' attr on input elem
+	/*
+	* We'll always track the value of the input fields, then trigger save action when we save it. 
+	* using the 'name' attr on input elem
+	*/
 	handleInputChange(event) {
 		//passing the event target by giving the input html a 'name' attr (which matches a key in modalForm obj
 		//we'll reference for later
 		const target = event.target;
 		const value = target.type === 'checkbox' ? target.checked : target.value;
 		const name = target.name;
-
-		const loansArr = this.state.loansArr.slice();
+	
 		let modalForm = JSON.parse(JSON.stringify(this.state.modalForm));
-		let extra = this.state.extra;
-
-		if (name === 'extra') {
-			extra = value;
-			console.log('@handleInputChange . [extra]');	
-			this.setState({
-				loansArr:loansArr,
+		let res = {
+				loansArr:this.state.loansArr,
 				investmentsArr: this.state.investmentsArr,
 				showModal:false,
 				modalForm:modalForm,
 				EMPTY_MODAL_FORM: this.state.EMPTY_MODAL_FORM,
-				extra:extra
-			});  			
-			return
+				extra:this.state.extra,
+				editMode:this.state.editMode
+			};
+
+		if (name === 'extra') {
+			res['extra'] = value;
+			res['showModal'] = false;
+			console.log('@handleInputChange . [extra]', value);	
+
 		} else {
 			//update new value for modal
-			modalForm[name]=value;			
+			modalForm[name]=value;	
+			res['showModal'] = true;
+
 		}
 				
-
-		this.setState({
-			loansArr:loansArr,
-			investmentsArr: this.state.investmentsArr,
-			showModal:true,
-			modalForm:modalForm,
-			EMPTY_MODAL_FORM: this.state.EMPTY_MODAL_FORM,
-			extra:extra
-		});  		
+		this.setState(res);  
 	}
 
 	//The Save New Loan button event, save to persistence, update react state
-	//id==0  means creating a loan
-	//id!=0  means editing an existing loan
+	//id==0  means creating a loan|investment
+	//id!=0  means editing an existing loan|investment
+	//
 	handleSaveLoan () {  		
 
 		let modalForm = JSON.parse(JSON.stringify(this.state.modalForm));
@@ -186,7 +202,8 @@ class App extends Component {
 			showModal:false,
 			modalForm:JSON.parse(JSON.stringify(this.state.EMPTY_MODAL_FORM)),
 			EMPTY_MODAL_FORM: this.state.EMPTY_MODAL_FORM,
-			extra:this.state.extra
+			extra:this.state.extra,
+			editMode:this.state.editMode
 		});  
 	}
 
@@ -200,7 +217,7 @@ class App extends Component {
 
 		console.log('handleSaveInvestment. id=',id);
 
-		let investmentsArr = this.state.investmentsloansArr.slice() || [];
+		let investmentsArr = this.state.investmentsArr.slice() || [];
 
 		if(id===0) {
 			modalForm.id = (new Date().getTime())+'|'+this.state.modalForm.name+'|'+this.state.modalForm.APR;			
@@ -222,7 +239,8 @@ class App extends Component {
 			showModal:false,
 			modalForm:JSON.parse(JSON.stringify(this.state.EMPTY_MODAL_FORM)),
 			EMPTY_MODAL_FORM: this.state.EMPTY_MODAL_FORM,
-			extra:this.state.extra
+			extra:this.state.extra,
+			editMode:this.state.editMode
 		});  
 	}
 
@@ -256,7 +274,8 @@ class App extends Component {
 			showModal:false,
 			modalForm:this.state.modalForm,
 			EMPTY_MODAL_FORM: this.state.EMPTY_MODAL_FORM,
-			extra:this.state.extra
+			extra:this.state.extra,
+			editMode:this.state.editMode
 		});  
 	}
 /******************
@@ -276,7 +295,8 @@ class App extends Component {
 			showModal:false,
 			modalForm:this.state.modalForm,
 			EMPTY_MODAL_FORM: this.state.EMPTY_MODAL_FORM,
-			extra:this.state.extra
+			extra:this.state.extra,
+			editMode:this.state.editMode
 		});  
 	}
 
@@ -294,15 +314,13 @@ class App extends Component {
 						/>
 					<LoanControlPanel
 						loansArray={this.state.loansArr} 
-						onClickShowModal={(id)=>this.handleShowModal(id)}  	
+						onClickShowModal={(id)=>this.handleShowModal(id,true)}  	
 						onClickDelete={(id)=>this.handleDeleteLoanEntry(id)}
-						onClickSaveLoanEntry={(id)=>this.handleSaveLoan(id)}
 						/>
 					<InvestmentsControlPanel
-						loansArray={this.state.investmentsArr} 
-						onClickShowModal={(id)=>this.handleShowModal(id)}  	
+						investmentsArray={this.state.investmentsArr} 
+						onClickShowModal={(id)=>this.handleShowModal(id,false)}  	
 						onClickDelete={(id)=>this.handleDeleteInvestEntry(id)}
-						onClickSaveLoanEntry={(id)=>this.handleSaveLoan(id)}
 						/>						
 				</div>
 				<div className="col-md-9">
@@ -311,11 +329,13 @@ class App extends Component {
 						investmentsArr={this.state.investmentsArr}
 						/>	
 				</div>
-				<AddModal 
+				<DataEntryModal
 					modalForm={this.state.modalForm}
 					showModal={this.state.showModal} 
+					editMode={this.state.editMode}
 					onClickCloseModal={()=>this.handleCloseModal()}  
-					onClickSaveModal={(id)=>this.handleSaveLoan(id)}
+					onClickDataEntryModal={()=>this.handleSaveLoan()}
+					onClickInvestModal={()=>this.handleSaveInvestment()}
 					onChangeInput={(evt)=>this.handleInputChange(evt)}
 					/>
 			</div>

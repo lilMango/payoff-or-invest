@@ -38,8 +38,9 @@ class LoanControlPanel extends React.Component {
 						name={argLoansArray[i].name}
 						APR={argLoansArray[i].APR}
 						monthlyPayment={argLoansArray[i].monthlyPayment}
+
 						onClickDelete={()=>this.props.onClickDelete(argLoansArray[i].id)}
-						onClickEditLoanEntry={()=>this.props.onClickShowModal(argLoansArray[i].id)}						
+						onClickEditEntry={()=>this.props.onClickShowModal(argLoansArray[i].id)}						
 
 						/>
 

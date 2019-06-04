@@ -8,7 +8,7 @@ class LoanEntry extends React.Component {
 				<div>{this.props.name}</div>
 				<span>${this.props.principal} at {this.props.APR} %APR. </span>
 				<span>${this.props.monthlyPayment} per month</span>
-				<button onClick={this.props.onClickEditLoanEntry}>edit</button>
+				<button onClick={this.props.onClickEditEntry}>edit</button>
 				<button onClick={this.props.onClickDelete}>delete</button>
 			</div>
 		);
