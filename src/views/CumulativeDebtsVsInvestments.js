@@ -4,6 +4,25 @@ var CanvasJSChart = CanvasJSReact.CanvasJSChart;
  
 class CumulativeDebtsVsInvestmentsChart extends Component {
 
+	calculateLongestRunningDebtMonths(loansArr) {
+		
+		let max=0;
+
+		for(let i=0;i<loansArr.length;i++) {
+			let APR = loansArr[i].APR / 100.0;
+	  		let principal = loansArr[i].principal;
+	  		let monthlyPayment = loansArr[i].monthlyPayment;
+	  		//console.log('APR:',APR,' principal:',principal,' monthlyPayment', monthlyPayment)
+	  		
+	  		//numPayments sorta helps prevent generating infinite amount of payment tables
+	  		let numPayments = -Math.log(1-(APR/12)*principal/monthlyPayment)/Math.log(1+APR/12)
+	  		if(numPayments>max){
+	  			max = numPayments;
+	  		}
+		}	
+		return max;
+	}
+
 	constructor(props) {
 		/*
 		var loansArr = [
@@ -14,6 +33,10 @@ class CumulativeDebtsVsInvestmentsChart extends Component {
 		localStorage.setItem('loans',JSON.stringify(loansArr));
 		*/
 		super(props);
+		
+		this.state = {
+			maxMonths:this.calculateLongestRunningDebtMonths(this.props.loansArr)
+		};		
 	}
 
 	//loanDetail => {name:,APR:,principal:,monthlyPayment}
@@ -21,9 +44,9 @@ class CumulativeDebtsVsInvestmentsChart extends Component {
 		
   		let loan = [];
 
-  		let APR = loanDetail.APR / 100.0;
-  		let principal = loanDetail.principal;
-  		let monthlyPayment = loanDetail.monthlyPayment;
+  		let APR = parseFloat(loanDetail.APR) / 100.0;
+  		let principal = parseFloat(loanDetail.principal);
+  		let monthlyPayment = parseFloat(loanDetail.monthlyPayment);
   		//console.log('APR:',APR,' principal:',principal,' monthlyPayment', monthlyPayment)
   		
   		//numPayments sorta helps prevent generating infinite amount of payment tables
@@ -66,16 +89,16 @@ class CumulativeDebtsVsInvestmentsChart extends Component {
 		
   		let investIntervals = [];
 
-  		let APR = investDetail.APR / 100.0;
-  		let principal = investDetail.principal;
-  		let monthlyPayment = investDetail.monthlyPayment;
+  		let APR = parseFloat(investDetail.APR) / 100.0;
+  		let principal = parseFloat(investDetail.principal);
+  		let monthlyPayment = parseFloat(investDetail.monthlyPayment);
   		//console.log('APR:',APR,' principal:',principal,' monthlyPayment', monthlyPayment)
   		
   		//numPayments sorta helps prevent generating infinite amount of payment tables
   		//let numPayments = -Math.log(1-(APR/12)*principal/monthlyPayment)/Math.log(1+APR/12)
   		//TODO calculate MAX interval from longest debt? or allow user to set length??
   		//console.log('Number of Years:',numPayments/12.0);
-  		let numPayments = 12 * 10; //12 months * 20 years
+  		let numPayments = this.state.maxMonths;//12 * 10; //12 months * 20 years
   
   		let year = (new Date()).getYear() + 1900;
   		let month = (new Date()).getMonth();
@@ -94,6 +117,7 @@ class CumulativeDebtsVsInvestmentsChart extends Component {
     		//setup for net iteration
     		//apply payment for next iteration
     		principal = principal + monthlyPayment;
+
     		month = month + 1
 
     		if (month>11) {

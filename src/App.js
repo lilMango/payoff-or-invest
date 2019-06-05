@@ -6,6 +6,7 @@ import ExtraPaymentsPanel from './views/ExtraPaymentsPanel';
 import CumulativeDebtsVsInvestment from './views/CumulativeDebtsVsInvestments';
 
 import DataEntryModal from './views/DataEntryModal';
+import Summary from './views/Summary';
 
 import './App.css';
 
@@ -215,7 +216,9 @@ class App extends Component {
 		let modalForm = JSON.parse(JSON.stringify(this.state.modalForm));
 		let id = modalForm.id;
 
-		console.log('handleSaveInvestment. id=',id);
+		modalForm['principal'] = parseFloat(modalForm['principal']);
+		modalForm['monthlyPayment'] = parseFloat(modalForm['monthlyPayment']);
+		modalForm['APR'] = parseFloat(modalForm['APR']);
 
 		let investmentsArr = this.state.investmentsArr.slice() || [];
 
@@ -324,6 +327,11 @@ class App extends Component {
 						/>						
 				</div>
 				<div className="col-md-9">
+					<Summary
+						loansArr={this.state.loansArr}
+						investmentsArr={this.state.investmentsArr}
+						extra = {this.state.extra}												
+						/>
 					<CumulativeDebtsVsInvestment
 						loansArr={this.state.loansArr}
 						investmentsArr={this.state.investmentsArr}
