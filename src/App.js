@@ -62,7 +62,8 @@ class App extends Component {
 				},
 				modalForm: {},
 				extra:0,
-				editMode:'loan'
+				editMode:'loan',
+				payoffChoice:'LOAN'
 		};
 	}
 
@@ -104,7 +105,8 @@ class App extends Component {
 			modalForm:modalForm,
 			EMPTY_MODAL_FORM: this.state.EMPTY_MODAL_FORM,
 			extra:this.state.extra,
-			editMode:this.state.editMode
+			editMode:this.state.editMode,
+			payoffChoice:this.state.payoffChoice
 		};
 
 		if (isLoan===true){
@@ -125,7 +127,8 @@ class App extends Component {
 			modalForm:modalForm,
 			EMPTY_MODAL_FORM: this.state.EMPTY_MODAL_FORM,
 			extra:this.state.extra,
-			editMode: this.state.editMode
+			editMode: this.state.editMode,
+			payoffChoice:this.state.payoffChoice
 		}
 		
 		res['showModal'] = false
@@ -134,10 +137,11 @@ class App extends Component {
 	}
 	
 	/*
+	* Handles the modal form for adding and editing a loan or investment.
 	* We'll always track the value of the input fields, then trigger save action when we save it. 
 	* using the 'name' attr on input elem
 	*/
-	handleInputChange(event) {
+	handleModalInputChange(event) {
 		//passing the event target by giving the input html a 'name' attr (which matches a key in modalForm obj
 		//we'll reference for later
 		const target = event.target;
@@ -152,13 +156,14 @@ class App extends Component {
 				modalForm:modalForm,
 				EMPTY_MODAL_FORM: this.state.EMPTY_MODAL_FORM,
 				extra:this.state.extra,
-				editMode:this.state.editMode
+				editMode:this.state.editMode,
+				payoffChoice:this.state.payoffChoice
 			};
 
 		if (name === 'extra') {
 			res['extra'] = value;
 			res['showModal'] = false;
-			console.log('@handleInputChange . [extra]', value);	
+			console.log('@handleModalInputChange . [extra]', value);	
 
 		} else {
 			//update new value for modal
@@ -204,7 +209,8 @@ class App extends Component {
 			modalForm:JSON.parse(JSON.stringify(this.state.EMPTY_MODAL_FORM)),
 			EMPTY_MODAL_FORM: this.state.EMPTY_MODAL_FORM,
 			extra:this.state.extra,
-			editMode:this.state.editMode
+			editMode:this.state.editMode,
+			payoffChoice:this.state.payoffChoice
 		});  
 	}
 
@@ -212,6 +218,8 @@ class App extends Component {
 	//id==0  means creating a Investment
 	//id!=0  means editing an existing Investment
 	handleSaveInvestment () {  		
+		console.log('handleSaveInvestment');
+
 
 		let modalForm = JSON.parse(JSON.stringify(this.state.modalForm));
 		let id = modalForm.id;
@@ -243,7 +251,8 @@ class App extends Component {
 			modalForm:JSON.parse(JSON.stringify(this.state.EMPTY_MODAL_FORM)),
 			EMPTY_MODAL_FORM: this.state.EMPTY_MODAL_FORM,
 			extra:this.state.extra,
-			editMode:this.state.editMode
+			editMode:this.state.editMode,
+			payoffChoice:this.state.payoffChoice
 		});  
 	}
 
@@ -267,8 +276,7 @@ class App extends Component {
 		
 		const loansArr = this.state.loansArr.slice();
 		let filtered = loansArr.filter(function(el) { return el.id !== id; }); 
-		console.log('@handleDeleteLoanEntry(',id,')');
-		console.log(filtered);
+
 		//delete file from storage/db
 		localStorage.setItem('loans',JSON.stringify(filtered));
 		this.setState({
@@ -278,7 +286,8 @@ class App extends Component {
 			modalForm:this.state.modalForm,
 			EMPTY_MODAL_FORM: this.state.EMPTY_MODAL_FORM,
 			extra:this.state.extra,
-			editMode:this.state.editMode
+			editMode:this.state.editMode,
+			payoffChoice:this.state.payoffChoice
 		});  
 	}
 /******************
@@ -299,10 +308,41 @@ class App extends Component {
 			modalForm:this.state.modalForm,
 			EMPTY_MODAL_FORM: this.state.EMPTY_MODAL_FORM,
 			extra:this.state.extra,
-			editMode:this.state.editMode
+			editMode:this.state.editMode,
+			payoffChoice:this.state.payoffChoice
 		});  
 	}
 
+	//Handles radio selection for debt/invest choice, and text box for extra payments
+	handleExtraPaymentInputChange(event){
+
+		const target = event.target;
+		const type= target.type;
+		const value = target.type === 'checkbox' ? target.checked : target.value;
+		const name = target.name;
+		console.log('type=',target.type,' |',name, ': ', value);		
+
+		let extra = this.state.extra;
+		let payoffChoice = this.state.paymentChoice;
+
+		if (type==='text') {
+			extra=parseFloat(value);
+		} else if (type==='radio'){
+			payoffChoice = (value==='DEBT')?'DEBT':'INVEST';
+		}
+		let res = {
+			investmentsArr:this.state.investmentsArr,
+			loansArr: this.state.loansArr,
+			showModal:this.state.showModal,
+			modalForm:this.state.modalForm,
+			EMPTY_MODAL_FORM: this.state.EMPTY_MODAL_FORM,
+			extra:extra,
+			editMode:this.state.editMode,
+			payoffChoice:payoffChoice
+		};
+		
+		this.setState(res); 
+	}
 
 	render() {
 
@@ -311,9 +351,10 @@ class App extends Component {
 				<div className="col-md-3">
 					<ExtraPaymentsPanel 
 						loansArray={this.state.loansArr}
-						investmentsArray={0}
+						investmentsArray={this.state.investmentsArr}
 						extra = {this.state.extra}
-						onChange={(evt)=>this.handleInputChange(evt)}
+						payoffChoice = {this.state.payoffChoice}
+						onChange={(evt)=>this.handleExtraPaymentInputChange(evt)}
 						/>
 					<LoanControlPanel
 						loansArray={this.state.loansArr} 
@@ -330,11 +371,14 @@ class App extends Component {
 					<Summary
 						loansArr={this.state.loansArr}
 						investmentsArr={this.state.investmentsArr}
-						extra = {this.state.extra}												
+						extra = {this.state.extra}
+						payoffChoice = {this.state.payoffChoice}									
 						/>
 					<CumulativeDebtsVsInvestment
 						loansArr={this.state.loansArr}
 						investmentsArr={this.state.investmentsArr}
+						payoffChoice={this.state.payoffChoice}
+						extra={this.state.extra}
 						/>	
 				</div>
 				<DataEntryModal
@@ -342,9 +386,9 @@ class App extends Component {
 					showModal={this.state.showModal} 
 					editMode={this.state.editMode}
 					onClickCloseModal={()=>this.handleCloseModal()}  
-					onClickDataEntryModal={()=>this.handleSaveLoan()}
+					onClickDataEntryModal={()=> (this.state.editMode==='loan')? this.handleSaveLoan(): this.handleSaveInvestment()}
 					onClickInvestModal={()=>this.handleSaveInvestment()}
-					onChangeInput={(evt)=>this.handleInputChange(evt)}
+					onChangeInput={(evt)=>this.handleModalInputChange(evt)}
 					/>
 			</div>
 		)

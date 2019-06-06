@@ -4,25 +4,6 @@ var CanvasJSChart = CanvasJSReact.CanvasJSChart;
  
 class CumulativeDebtsVsInvestmentsChart extends Component {
 
-	calculateLongestRunningDebtMonths(loansArr) {
-		
-		let max=0;
-
-		for(let i=0;i<loansArr.length;i++) {
-			let APR = loansArr[i].APR / 100.0;
-	  		let principal = loansArr[i].principal;
-	  		let monthlyPayment = loansArr[i].monthlyPayment;
-	  		//console.log('APR:',APR,' principal:',principal,' monthlyPayment', monthlyPayment)
-	  		
-	  		//numPayments sorta helps prevent generating infinite amount of payment tables
-	  		let numPayments = -Math.log(1-(APR/12)*principal/monthlyPayment)/Math.log(1+APR/12)
-	  		if(numPayments>max){
-	  			max = numPayments;
-	  		}
-		}	
-		return max;
-	}
-
 	constructor(props) {
 		/*
 		var loansArr = [
@@ -39,6 +20,37 @@ class CumulativeDebtsVsInvestmentsChart extends Component {
 		};		
 	}
 
+	/**
+	* Selects the debt with lengthiest interval to CAP the investment growth (and compare under equal length of time)
+	*/
+	calculateLongestRunningDebtMonths(loansArr) {
+		
+		let max=0;
+
+		for(let i=0;i<loansArr.length;i++) {
+			let APR = loansArr[i].APR / 100.0;
+	  		let principal = loansArr[i].principal;
+	  		let monthlyPayment = parseFloat(loansArr[i].monthlyPayment);
+
+
+			//Add extra monthly payment towards loan
+    		//TODO handle logic else where for roll over and to apply toward NEXT highest loan. 
+    		//NOTE this adds extra payments towards EACH individual loan!!
+    		if(this.props.payoffChoice === 'DEBT' && this.props.extra >0) {
+    			monthlyPayment = monthlyPayment + this.props.extra;
+    		}
+
+	  		//numPayments sorta helps prevent generating infinite amount of payment tables
+	  		let numPayments = -Math.log(1-(APR/12)*principal/monthlyPayment)/Math.log(1+APR/12.0)
+	  		if(numPayments>max){
+	  			max = numPayments;
+	  		}
+		}	
+		
+		return max;
+	}
+
+
 	//loanDetail => {name:,APR:,principal:,monthlyPayment}
 	generateLoanIntervals(loanDetail) {
 		
@@ -48,11 +60,18 @@ class CumulativeDebtsVsInvestmentsChart extends Component {
   		let principal = parseFloat(loanDetail.principal);
   		let monthlyPayment = parseFloat(loanDetail.monthlyPayment);
   		//console.log('APR:',APR,' principal:',principal,' monthlyPayment', monthlyPayment)
-  		
+
+		//Add extra monthly payment towards loan
+		//TODO handle logic else where for roll over and to apply toward NEXT highest loan. 
+		//**** NOTE this adds extra payments towards EACH individual loan!! ******
+		if(this.props.payoffChoice === 'DEBT' && this.props.extra >0) {
+			monthlyPayment = monthlyPayment + this.props.extra;
+		}  		
+
   		//numPayments sorta helps prevent generating infinite amount of payment tables
   		let numPayments = -Math.log(1-(APR/12)*principal/monthlyPayment)/Math.log(1+APR/12)
-  		//console.log('Number of Years:',numPayments/12.0);
-  
+  		
+
   		let year = (new Date()).getYear() + 1900;
   		let month = (new Date()).getMonth();
 
@@ -70,6 +89,7 @@ class CumulativeDebtsVsInvestmentsChart extends Component {
     		//setup for net iteration
     		//apply payment for next iteration
     		principal = principal - monthlyPayment;
+
     		month = month + 1
 
     		if (month>11) {
@@ -86,7 +106,7 @@ class CumulativeDebtsVsInvestmentsChart extends Component {
 
 	//investDetail => {name:,APR:,principal:,monthlyPayment}
 	generateInvestmentIntervals(investDetail) {
-		
+
   		let investIntervals = [];
 
   		let APR = parseFloat(investDetail.APR) / 100.0;
@@ -94,12 +114,19 @@ class CumulativeDebtsVsInvestmentsChart extends Component {
   		let monthlyPayment = parseFloat(investDetail.monthlyPayment);
   		//console.log('APR:',APR,' principal:',principal,' monthlyPayment', monthlyPayment)
   		
+
+		//Add extra monthly payment towards investment
+		//TODO handle logic else where for roll over and to apply toward NEXT highest investment. 
+		//NOTE this adds extra payments towards EACH individual investment!!
+		if(this.props.payoffChoice === 'INVEST' && this.props.extra >0) {
+			monthlyPayment = monthlyPayment + this.props.extra;
+		}
+
   		//numPayments sorta helps prevent generating infinite amount of payment tables
   		//let numPayments = -Math.log(1-(APR/12)*principal/monthlyPayment)/Math.log(1+APR/12)
-  		//TODO calculate MAX interval from longest debt? or allow user to set length??
-  		//console.log('Number of Years:',numPayments/12.0);
-  		let numPayments = this.state.maxMonths;//12 * 10; //12 months * 20 years
-  
+  		//TODO calculate MAX interval from longest debt? or allow user to set length??  		
+  		let numPayments = this.calculateLongestRunningDebtMonths(this.props.loansArr);//12 * 10; //12 months * 20 years
+
   		let year = (new Date()).getYear() + 1900;
   		let month = (new Date()).getMonth();
 
@@ -117,7 +144,7 @@ class CumulativeDebtsVsInvestmentsChart extends Component {
     		//setup for net iteration
     		//apply payment for next iteration
     		principal = principal + monthlyPayment;
-
+    		
     		month = month + 1
 
     		if (month>11) {
