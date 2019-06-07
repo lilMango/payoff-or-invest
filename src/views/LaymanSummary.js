@@ -47,6 +47,7 @@ class LaymanSummary extends React.Component {
 
 		return (
 			<div className="row layman-summary" >
+				<h3>But what does this mean?</h3>
 				<p>{this.setupMessage()}</p>
 
 				<p>{this.setupMessage2()}</p>

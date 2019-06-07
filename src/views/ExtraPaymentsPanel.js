@@ -61,7 +61,7 @@ class ExtraPaymentsPanel extends React.Component {
 								id="input-extra-monthly"						
 								name="extra"
 								onChange={this.props.onChange}
-								value={this.props.extra}
+								value={(isNaN(this.props.extra))?0:this.props.extra}
 								placeholder="Extra $ per month"/>
 							<hr style={hrHighlight} />
 						</div>

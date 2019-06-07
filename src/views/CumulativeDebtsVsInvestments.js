@@ -195,7 +195,7 @@ class CumulativeDebtsVsInvestmentsChart extends Component {
 				text: "Cumulative Debts & Investment"
 			},
 			subtitles: [{
-				text: "subtitle here"
+				text: ""
 			}],
 			axisY: {
 				includeZero: false,

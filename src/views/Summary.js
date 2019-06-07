@@ -190,7 +190,7 @@ class Summary extends React.Component {
 					<div className="col-md-3 card">
 						<span className="header">Interest Earned</span>
 						<span className="amount">${Number(parseInt(this.calculateAllInvestmentTotalInterest(this.props.investmentsArr))).toLocaleString('en')}</span>
-						<span className="message">contributing ${2002}</span>
+						<span className="message">Make money work 4 u</span>
 					</div>
 					<div className="col-md-3 card" style={hidden}>
 						<span className="header">Savings earned extra payments</span>
