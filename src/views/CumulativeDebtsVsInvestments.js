@@ -211,7 +211,7 @@ class CumulativeDebtsVsInvestmentsChart extends Component {
 		};
 		
 		return (
-		<div>
+		<div className="panel-shadow">
 			<CanvasJSChart options = {options} 
 				/* onRef={ref => this.chart = ref} */
 			/>

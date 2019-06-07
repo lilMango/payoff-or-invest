@@ -14,7 +14,8 @@ class ExtraPaymentsPanel extends React.Component {
 	calculateMinimum () {
 		const arraySumFunc = (sum, curElem)=>sum + parseInt(curElem['monthlyPayment']);
 
-		let sum = this.state.loansArr.reduce(arraySumFunc,0);
+		let sum = this.props.loansArray.reduce(arraySumFunc,0);
+		sum = sum + this.props.investmentsArray.reduce(arraySumFunc,0);
 		return sum;
 	}
 
@@ -45,7 +46,7 @@ class ExtraPaymentsPanel extends React.Component {
 										
 					<div>
 
-						<div className="right-align">0</div>
+						<div className="right-align">${Number(parseInt(this.calculateMinimum()))}</div>
 
 						<div className="sub-header">Minimum monthly</div>		
 					</div>

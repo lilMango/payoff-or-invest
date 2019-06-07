@@ -17,20 +17,7 @@ import './App.css';
 
 class App extends Component {
 
-	getLoansFromDB() {
 
-		let tmp = JSON.parse(localStorage.getItem("loans")) || [];		
-		console.log('@getLoansFromDB');
-		console.log(tmp);
-		return tmp;
-	}
-
-	getInvestmentsFromDB() {
-		let tmp = JSON.parse(localStorage.getItem("investments")) || [];		
-		console.log('@getInvestmentsFromDB');
-		console.log(tmp);
-		return tmp;
-	}
 	constructor(props) {
 		/*
 		let loansArr = [
@@ -67,6 +54,20 @@ class App extends Component {
 		};
 	}
 
+	getLoansFromDB() {
+
+		let tmp = JSON.parse(localStorage.getItem("loans")) || [];		
+		console.log('@getLoansFromDB');
+		console.log(tmp);
+		return tmp;
+	}
+
+	getInvestmentsFromDB() {
+		let tmp = JSON.parse(localStorage.getItem("investments")) || [];		
+		console.log('@getInvestmentsFromDB');
+		console.log(tmp);
+		return tmp;
+	}
 
 
 	/*

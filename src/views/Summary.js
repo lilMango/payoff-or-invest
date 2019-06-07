@@ -1,10 +1,12 @@
 import React from 'react';
+
+import LaymanSummary from './LaymanSummary';
 import '../css/Summary.css';
+
+
 
 class Summary extends React.Component {
 	
-
-
 	constructor(props) {
 
 		super(props);				
@@ -164,16 +166,13 @@ class Summary extends React.Component {
 
 	render() {
 
-		const inputTextStyle = {border:'none',width:'100%'};
 
 		let display = {display:'none'};
 		let hidden = {visibility:'hidden'};
 
 		if (this.props.showModal === true) {
 			display = {display:'block'};
-		} else {
-
-		}
+		} 
 
 		return (
 			<div>	
@@ -186,7 +185,7 @@ class Summary extends React.Component {
 					<div className="col-md-3 card ">
 						<span className="header">Interest Paid</span>
 						<span className="amount">${Number(parseInt(this.calculateAllLoansTotalInterest(this.props.loansArr))).toLocaleString('en')}</span>
-						<span className="message">${9000} principal loans</span>
+						<span className="message">Cost of loan</span>
 					</div>
 					<div className="col-md-3 card">
 						<span className="header">Interest Earned</span>
@@ -199,9 +198,14 @@ class Summary extends React.Component {
 						<span className="message">message</span>
 					</div>								
 				</div>
-				<div className="row">
-					After {200} years, {"you'd save more paying off; you'd earn more investing"} {"the highest APR debt; the highest APR investment"}
-				</div>
+				<LaymanSummary
+					payoffChoice={this.props.payoffChoice}
+					extra={this.props.extra}
+					interestDebtPaid={Number(parseInt(this.calculateAllLoansTotalInterest(this.props.loansArr))).toLocaleString('en')}
+					interestInvestmentEarned={Number(parseInt(this.calculateAllInvestmentTotalInterest(this.props.investmentsArr))).toLocaleString('en')}
+					timeLength={this.calculateLongestRunningDebtMonths(this.props.loansArr)}
+					/>
+
 			</div>
 		);
 	}

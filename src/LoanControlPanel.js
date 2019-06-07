@@ -1,6 +1,9 @@
 import React from 'react';
 import LoanEntry from  './LoanEntry';
+
 import './panel.css';
+
+import plusIcon from './images/plus.png';
 
 class LoanControlPanel extends React.Component {
 
@@ -58,7 +61,9 @@ class LoanControlPanel extends React.Component {
 	                {"Loans"}
 	            </div>
 	            <div className="panel-add">
-	                <button id="btnAddLoan" onClick={()=>this.props.onClickShowModal(0)}>+</button>
+	                <button id="btnAddLoan" onClick={()=>this.props.onClickShowModal(0)} className="icon-button">
+	                	<img width="40" src={plusIcon}/>
+                	</button>
 	            </div>			
 				<div className="panel-content" id="loans-content-container">
 					{this.renderLoansTable(this.props.loansArray)}
