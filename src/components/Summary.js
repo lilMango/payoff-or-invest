@@ -160,8 +160,8 @@ class Summary extends React.Component {
 				<LaymanSummary
 					payoffChoice={this.props.payoffChoice}
 					extra={this.props.extra}
-					interestDebtPaid={Number(parseInt(9000)).toLocaleString('en')}
-					interestInvestmentEarned={Number(parseInt(9001)).toLocaleString('en')}
+					interestDebtPaid={Number(parseInt(this.calculateLoanAccruedInterest(this.props.loan))).toLocaleString('en')}
+					interestInvestmentEarned={Number(parseInt(this.calculateInvestmentAccruedInterest(this.props.investment))).toLocaleString('en')}
 					timeLength={this.calculateLongestRunningDebtMonths(this.props.loan)}
 					/>
 
