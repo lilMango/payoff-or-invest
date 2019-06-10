@@ -14,40 +14,30 @@ class CumulativeDebtsVsInvestmentsChart extends Component {
 		localStorage.setItem('loans',JSON.stringify(loansArr));
 		*/
 		super(props);
-		
-		this.state = {
-			maxMonths:this.calculateLongestRunningDebtMonths(this.props.loansArr)
-		};		
+			
 	}
 
 	/**
 	* Selects the debt with lengthiest interval to CAP the investment growth (and compare under equal length of time)
 	*/
-	calculateLongestRunningDebtMonths(loansArr) {
+	calculateLongestRunningDebtMonths(loan) {
 		
-		let max=0;
-
-		for(let i=0;i<loansArr.length;i++) {
-			let APR = loansArr[i].APR / 100.0;
-	  		let principal = loansArr[i].principal;
-	  		let monthlyPayment = parseFloat(loansArr[i].monthlyPayment);
+		let APR = loan.APR / 100.0;
+  		let principal = loan.principal;
+  		let monthlyPayment = parseFloat(loan.monthlyPayment);
 
 
-			//Add extra monthly payment towards loan
-    		//TODO handle logic else where for roll over and to apply toward NEXT highest loan. 
-    		//NOTE this adds extra payments towards EACH individual loan!!
-    		if(this.props.payoffChoice === 'DEBT' && this.props.extra >0) {
-    			monthlyPayment = monthlyPayment + this.props.extra;
-    		}
+		//Add extra monthly payment towards loan
+		//TODO handle logic else where for roll over and to apply toward NEXT highest loan. 
+		//NOTE this adds extra payments towards EACH individual loan!!
+		if(this.props.payoffChoice === 'DEBT' && this.props.extra >0) {
+			monthlyPayment = monthlyPayment + this.props.extra;
+		}
 
-	  		//numPayments sorta helps prevent generating infinite amount of payment tables
-	  		let numPayments = -Math.log(1-(APR/12)*principal/monthlyPayment)/Math.log(1+APR/12.0)
-	  		if(numPayments>max){
-	  			max = numPayments;
-	  		}
-		}	
-		
-		return max;
+  		//numPayments sorta helps prevent generating infinite amount of payment tables
+  		let numPayments = -Math.log(1-(APR/12)*principal/monthlyPayment)/Math.log(1+APR/12.0)
+	
+		return numPayments;
 	}
 
 
@@ -125,7 +115,8 @@ class CumulativeDebtsVsInvestmentsChart extends Component {
   		//numPayments sorta helps prevent generating infinite amount of payment tables
   		//let numPayments = -Math.log(1-(APR/12)*principal/monthlyPayment)/Math.log(1+APR/12)
   		//TODO calculate MAX interval from longest debt? or allow user to set length??  		
-  		let numPayments = this.calculateLongestRunningDebtMonths(this.props.loansArr);//12 * 10; //12 months * 20 years
+  		let numPayments = this.calculateLongestRunningDebtMonths(this.props.loan);//12 * 10; //12 months * 20 years
+		//TODO ****
 
   		let year = (new Date()).getYear() + 1900;
   		let month = (new Date()).getMonth();
@@ -159,31 +150,28 @@ class CumulativeDebtsVsInvestmentsChart extends Component {
   		return investIntervals;		
 	}
 
-	generateCanvasJSDataPoints(loansArr,investmentsArr){
+	generateCanvasJSDataPoints(loan,investment){
 	  
 		let canvasJSarr = [];
 
-	  	for(let i=0; i<loansArr.length;i++){
-	    	let tmp = {
-	      		type: "splineArea", 
-	      		showInLegend: true,
-	      		name: loansArr[i].name,
-	      		yValueFormatString: "$#,##0",     
-	      		dataPoints: this.generateLoanIntervals(loansArr[i])    
-	    	}
-	    	canvasJSarr.push(tmp);
-	  	}
+    	let tmp = {
+      		type: "splineArea", 
+      		showInLegend: true,
+      		name: 'Debt',
+      		yValueFormatString: "$#,##0",     
+      		dataPoints: this.generateLoanIntervals(loan)    
+    	}
+    	canvasJSarr.push(tmp);
 
-	  	for(let i=0;i<investmentsArr.length;i++){
-	  		let tmp = {
-	  			type: "splineArea",
-	  			showInLegend: true,
-	  			name: investmentsArr[i].name,
-	      		yValueFormatString: "$#,##0",     
-	      		dataPoints: this.generateInvestmentIntervals(investmentsArr[i])  	  			
-	  		}
-	  		canvasJSarr.push(tmp);
-	  	}
+  		tmp = {
+			type: "splineArea",
+			showInLegend: true,
+			name: 'Investment',
+	  		yValueFormatString: "$#,##0",     
+  			dataPoints: this.generateInvestmentIntervals(investment)  	  			
+		}
+		canvasJSarr.push(tmp);
+
 	  return canvasJSarr;
 	}	
 
@@ -207,7 +195,7 @@ class CumulativeDebtsVsInvestmentsChart extends Component {
 			legend: {
 				fontSize: 13
 			},
-			data: this.generateCanvasJSDataPoints(this.props.loansArr,this.props.investmentsArr)
+			data: this.generateCanvasJSDataPoints(this.props.loan,this.props.investment)
 		};
 		
 		return (
