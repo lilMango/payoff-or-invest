@@ -3,9 +3,8 @@ import React, { Component } from 'react';
 import LoanControlPanel from './components/LoanControlPanel';
 import InvestmentsControlPanel from './components/InvestmentsControlPanel';
 import ExtraPaymentsPanel from './components/ExtraPaymentsPanel';
-import CumulativeDebtsVsInvestment from './components/CumulativeDebtsVsInvestments';
 
-import Summary from './components/Summary';
+import Results from './components/Results';
 
 import './App.css';
 
@@ -44,6 +43,18 @@ class App extends Component {
 				payoffChoice:'LOAN'
 		};
 	}
+
+    getHeader() {
+            return(
+                    <div className="header-bar">
+                        <span className="header-menu">
+
+                           <a href="/portfolio.html" target="_blank">Portfolio</a>
+                        </span>
+                        <h1 className="header-title">Payoff or Invest</h1>
+                </div>
+            )
+    }
 
 	getLoanFromDB() {
 		
@@ -138,42 +149,37 @@ class App extends Component {
 	render() {
 
 		return(
-			<div className="row" style={{marginLeft:'0px',marginRight:'0px'}}>
-				<div className="col-md-3">
-					<ExtraPaymentsPanel 
-						loan={this.state.loan}
-						investment={this.state.investment}
-						extra = {this.state.extra}
-						payoffChoice = {this.state.payoffChoice}
-						onChange={(evt)=>this.handleExtraPaymentInputChange(evt)}
-						/>
-					<LoanControlPanel
-						loan={this.state.loan} 
-						onChange={((evt) => this.handleDataInputChange(evt))}
-						/>
-					<InvestmentsControlPanel
-						investment={this.state.investment} 
-						onChange={((evt) => this.handleDataInputChange(evt))}
-						/>		
+			<div>		
+				{this.getHeader()}	
+				<div className="row" style={{marginLeft:'0px',marginRight:'0px'}}>
+					<div className="col-md-3">
+						<ExtraPaymentsPanel 
+							loan={this.state.loan}
+							investment={this.state.investment}
+							extra = {this.state.extra}
+							payoffChoice = {this.state.payoffChoice}
+							onChange={(evt)=>this.handleExtraPaymentInputChange(evt)}
+							/>
+						<LoanControlPanel
+							loan={this.state.loan} 
+							onChange={((evt) => this.handleDataInputChange(evt))}
+							/>
+						<InvestmentsControlPanel
+							investment={this.state.investment} 
+							onChange={((evt) => this.handleDataInputChange(evt))}
+							/>							
+					</div>
+					<div className="col-md-9">
+						<Results
+							loan = {this.state.loan}
+							investment = {this.state.investment}
+							extra = {this.state.extra}
+							payoffChoice = {this.state.payoffChoice}	
+							/>
+					</div>
 
-				
 				</div>
-				<div className="col-md-9">
-					<Summary
-						loan={this.state.loan}
-						investment={this.state.investment}
-						extra = {this.state.extra}
-						payoffChoice = {this.state.payoffChoice}									
-						/>
-					<CumulativeDebtsVsInvestment
-						loan={this.state.loan}
-						investment={this.state.investment}
-						payoffChoice={this.state.payoffChoice}
-						extra={this.state.extra}
-						/>	
-				</div>
-
-			</div>
+			</div>	
 		)
 	}
 }

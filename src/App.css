@@ -1,3 +1,21 @@
+.header-bar {
+  padding-left:32px;
+  padding-right:32px;
+  background-color:rgb(3, 169, 244,0.7);
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px,rgba(0, 0, 0, 0.12) 0px 1px 4px;
+  color:white; 
+}
+
+.header-bar .header-title {
+  line-height:64px;
+  margin:0px;
+}
+
+.header-bar  .header-menu {
+  float:right;
+  margin-top:20px;
+}
+
 /*********** Modal stuff ***/
 /* Modal Content */
 .modal-content {
