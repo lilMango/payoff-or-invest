@@ -123,7 +123,9 @@ class Results extends React.Component {
 
 			//reinvest loan contribution if finished paying debt off 
 			//and continue those contributions until original loan length
-			if(payoffChoice === 'DEBT' && j>DEBT_MONTHS ) {
+			if(this.props.doReinvest ===true 
+				&& payoffChoice === 'DEBT'
+				&& j>DEBT_MONTHS ) {
 				principal = principal + parseFloat(loan.monthlyPayment);
 			}
 		}
@@ -185,7 +187,9 @@ class Results extends React.Component {
 
 			//reinvest loan contribution if finished paying debt off 
 			//and continue those contributions until original loan length
-			if(payoffChoice === 'DEBT' && j>DEBT_MONTHS ) {
+			if(this.props.doReinvest ===true 
+				&& payoffChoice === 'DEBT'
+				&& j>DEBT_MONTHS ) {
 				principal = principal + parseFloat( loan.monthlyPayment);
 			}
 		}
@@ -227,6 +231,7 @@ class Results extends React.Component {
 					payoffChoice={this.props.payoffChoice}
 					extra={this.props.extra}
 					calculateLongestRunningDebtMonths={this.calculateLongestRunningDebtMonths}
+					doReinvest = {this.props.doReinvest}
 					/>
 				);
 		} else {
@@ -237,6 +242,7 @@ class Results extends React.Component {
 					payoffChoice={this.props.payoffChoice}
 					extra={this.props.extra}
 					calculateLongestRunningDebtMonths={this.calculateLongestRunningDebtMonths}
+					doReinvest = {this.props.doReinvest}
 					/>
 				);
 		}
@@ -254,7 +260,8 @@ class Results extends React.Component {
 					totalInvestment= {this.calculateInvestmentCumulative(this.props.investment, this.props.payoffChoice, this.props.extra, this.props.loan)}
 					extra = {this.props.extra}
 					payoffChoice = {this.props.payoffChoice}	
-					timeLength = {this.calculateLongestRunningDebtMonths(this.props.loan,this.props.payoffChoice, 0)}
+					timeLength = {this.calculateLongestRunningDebtMonths(this.props.loan,null, 0)}
+					doReinvest = {this.props.doReinvest}
 					/>
 					<div className="graph-nav">
 						<button onClick={()=>this.toggleGraphMode(0)}

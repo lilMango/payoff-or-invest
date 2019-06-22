@@ -239,7 +239,9 @@ class CumulativeDebtsVsInvestmentsChart extends Component {
     		principal = principal + monthlyPayment;
 
     		//reinvest loan contribution if finished paying debt off and continue those contributions until original loan length
-    		if(this.props.payoffChoice === 'DEBT' && i>DEBT_MONTHS) {
+			if(this.props.doReinvest ===true 
+				&& this.props.payoffChoice === 'DEBT'
+				&& i>DEBT_MONTHS ) {
     			principal = principal + parseFloat(loanDetail.monthlyPayment);
     		}
 
