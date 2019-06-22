@@ -32,7 +32,7 @@ class App extends Component {
 
 		super(props);				
 
-		let loan = {'principal':90000, 'APR':4.58, 'monthlyPayment':1000.0};
+		let loan = {'principal':10000, 'APR':4.58, 'monthlyPayment':1040.0};
 		let investment = {'principal':500, 'APR':7.6, 'monthlyPayment':500.0};
 
 		this.state = {
