@@ -263,6 +263,9 @@ class InterestDebtVsInvestment extends Component {
 				&& this.props.payoffChoice === 'DEBT'
 				&& i>DEBT_MONTHS ) {
     			principal = principal + parseFloat(loanDetail.monthlyPayment);
+    			if(this.props.extra>0){
+    				principal = principal+parseFloat(this.props.extra);
+    			}    		
     		}    		
 
     		month = month + 1
@@ -306,7 +309,7 @@ class InterestDebtVsInvestment extends Component {
 
 	render() {
 		const options = {
-			theme: "light2",
+			
 			animationEnabled: true,
 			title: {
 				text: "Interest Debt Paid vs Interest Investment Earned"
@@ -324,7 +327,20 @@ class InterestDebtVsInvestment extends Component {
 			legend: {
 				fontSize: 13
 			},
-			data: this.generateCanvasJSDataPoints(this.props.loan,this.props.investment)
+			data: this.generateCanvasJSDataPoints(this.props.loan,this.props.investment),
+			customColorSet:[//colorSet Array
+			    "#64d064",
+			    "#EC5657",
+	   			"#1BCDD1",
+	     		"#8FAABB",
+	     		"#B08BEB",
+	     		"#3EA0DD",
+	     		"#F5A52A",
+	     		"#23BFAA",
+	     		"#FAA586",
+	     		"#EB8CC6",		     
+		    ],
+		    colorSet:"customColorSet"
 		};
 		
 		return (

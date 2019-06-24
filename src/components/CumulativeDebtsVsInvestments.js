@@ -243,6 +243,9 @@ class CumulativeDebtsVsInvestmentsChart extends Component {
 				&& this.props.payoffChoice === 'DEBT'
 				&& i>DEBT_MONTHS ) {
     			principal = principal + parseFloat(loanDetail.monthlyPayment);
+    			if(this.props.extra>0){
+    				principal = principal + parseFloat(this.props.extra);
+    			}
     		}
 
     		month = month + 1
@@ -304,7 +307,12 @@ class CumulativeDebtsVsInvestmentsChart extends Component {
 			legend: {
 				fontSize: 13
 			},
-			data: this.generateCanvasJSDataPoints(this.props.loan,this.props.investment)
+			data: this.generateCanvasJSDataPoints(this.props.loan,this.props.investment),
+			customColorSet1:[//colorSet Array
+		     "#64d064",
+		     "#EC5657"
+		    ],
+		    colorSet:"customColorSet1"			
 		};
 		
 		return (
